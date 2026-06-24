@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Club Brava — Voucher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:    #0d0d0d;
+      --surface:  #161a14;
+      --card-bg:  #1a1f18;
+      --border:   rgba(255,255,255,0.08);
+      --gold:     #c9a84c;
+      --gold-dim: rgba(201,168,76,0.15);
+      --green:    #4caf72;
+      --green-bg: rgba(76,175,114,0.12);
+      --green-ring: rgba(76,175,114,0.35);
+      --red:      #e05555;
+      --red-bg:   rgba(224,85,85,0.10);
+      --white:    #f5f2ed;
+      --muted:    #7a7a7a;
+      --font-display: 'Playfair Display', serif;
+      --font-body:    'Inter', sans-serif;
+      --font-mono:    'Space Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 390px;
+      background: var(--surface);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 0 1px rgba(76,175,114,0.08), 0 24px 60px rgba(0,0,0,0.6);
+    }
+
+    /* ── Top accent line ── */
+    .card-accent {
+      height: 3px;
+      background: linear-gradient(90deg, transparent 0%, var(--green) 40%, var(--gold) 100%);
+    }
+
+    .card-accent.red-accent {
+      background: linear-gradient(90deg, transparent 0%, var(--red) 60%, transparent 100%);
+    }
+
+    /* ── Header ── */
+    .card-header {
+      padding: 28px 28px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    /* ── Hero status ── */
+    .hero {
+      padding: 32px 28px 24px;
+      text-align: center;
+    }
+
+    .check-ring {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 2px solid var(--green-ring);
+      background: var(--green-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+
+    .check-ring::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid rgba(76,175,114,0.15);
+    }
+
+    .check-icon {
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    /* Red X for redeemed */
+    .x-ring {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 2px solid rgba(224,85,85,0.35);
+      background: var(--red-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .status-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .status-label.used { color: var(--red); }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* ── Info table ── */
+    .info-table {
+      margin: 0 24px 20px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-row:last-child { border-bottom: none; }
+
+    .info-key {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .info-val {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--white);
+      text-align: right;
+    }
+
+    .info-val.code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Perks ── */
+    .perks {
+      padding: 0 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .perk-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .perk-emoji {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .perk-text {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--white);
+      line-height: 1.4;
+    }
+
+    .perk-text small {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── Redeemed notice ── */
+    .redeemed-notice {
+      margin: 0 24px 20px;
+      background: var(--red-bg);
+      border: 1px solid rgba(224,85,85,0.2);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .redeemed-notice .rn-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+
+    .redeemed-notice .rn-date {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── Mark used button ── */
+    .btn-wrap { padding: 0 24px 24px; }
+
+    .btn-redeem {
+      width: 100%;
+      background: var(--green);
+      border: none;
+      border-radius: 10px;
+      color: #0d1a10;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 16px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-redeem:hover   { opacity: 0.9; transform: translateY(-1px); }
+    .btn-redeem:active  { transform: translateY(0); }
+    .btn-redeem:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── Footer ── */
+    .card-footer {
+      padding: 14px 28px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Error state ── */
+    .error-hero {
+      padding: 48px 28px;
+      text-align: center;
+    }
+
+    .error-hero .x-big {
+      font-size: 52px;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+
+    .error-hero .e-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .error-hero .e-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── Confirm overlay ── */
+    #confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    #confirm-overlay.show { display: flex; }
+
+    .confirm-sheet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 390px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .confirm-sheet .cs-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .confirm-sheet .cs-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .confirm-actions { display: flex; flex-direction: column; gap: 10px; }
+
+    .btn-confirm-yes {
+      background: var(--green);
+      border: none;
+      border-radius: 10px;
+      color: #0d1a10;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 15px;
+      cursor: pointer;
+    }
+
+    .btn-confirm-no {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      padding: 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="card-accent" id="top-accent"></div>
+  <div class="card-header">
+    <div class="brand">Brava</div>
+  </div>
+
+  <!-- Content injected by JS -->
+  <div id="card-content">
+    <div class="hero">
+      <div class="check-ring">
+        <div class="check-icon">⏳</div>
+      </div>
+      <div class="status-label">Verifying</div>
+      <div class="hero-title">Loading…</div>
+    </div>
+  </div>
+
+  <div class="card-footer" id="card-footer">Brava Puerto Rico · Voucher Verification</div>
+</div>
+
+<!-- Confirm sheet -->
+<div id="confirm-overlay">
+  <div class="confirm-sheet">
+    <div class="cs-title">Confirm Redemption</div>
+    <div class="cs-sub" id="confirm-sub">Mark this voucher as used?</div>
+    <div class="confirm-actions">
+      <button class="btn-confirm-yes" onclick="doRedeem()">✓ Mark as Used</button>
+      <button class="btn-confirm-no" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="../admin/config.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const code   = params.get('code');
+  let currentVoucher = null;
+
+  async function api(p) {
+    const url = new URL(window.BRAVA_API_URL);
+    Object.entries(p).forEach(([k,v]) => url.searchParams.set(k,v));
+    const res = await fetch(url);
+    return res.json();
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  function renderActive(v) {
+    document.getElementById('top-accent').className = 'card-accent';
+    document.getElementById('card-content').innerHTML = `
+      <div class="hero">
+        <div class="check-ring">
+          <div class="check-icon">✅</div>
+        </div>
+        <div class="status-label">Valid Pass</div>
+        <div class="hero-title">Welcome In!</div>
+        <div class="hero-sub">Match name to ID</div>
+      </div>
+
+      <div class="info-table">
+        <div class="info-row">
+          <span class="info-key">Guest</span>
+          <span class="info-val">${v.guestName}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Code</span>
+          <span class="info-val code">${v.code}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Status</span>
+          <span class="info-val" style="color:var(--green)">Active</span>
+        </div>
+      </div>
+
+      <div class="perks">
+        <div class="perk-card">
+          <div class="perk-emoji">🎟️</div>
+          <div class="perk-text">
+            Free entry for you + 1 guest
+            <small>Both must enter together</small>
+          </div>
+        </div>
+        <div class="perk-card">
+          <div class="perk-emoji">🥂</div>
+          <div class="perk-text">
+            2 drink tickets to split however you like
+            <small>One per person at the bar</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-wrap">
+        <button class="btn-redeem" onclick="openConfirm()">Mark as Used</button>
+      </div>
+    `;
+  }
+
+  function renderRedeemed(v) {
+    document.getElementById('top-accent').className = 'card-accent red-accent';
+    document.getElementById('card-content').innerHTML = `
+      <div class="hero">
+        <div class="x-ring">
+          <div class="check-icon">❌</div>
+        </div>
+        <div class="status-label used">Already Used</div>
+        <div class="hero-title">Pass Redeemed</div>
+        <div class="hero-sub">This voucher has been used</div>
+      </div>
+
+      <div class="info-table">
+        <div class="info-row">
+          <span class="info-key">Guest</span>
+          <span class="info-val">${v.guestName}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Code</span>
+          <span class="info-val code">${v.code}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Redeemed</span>
+          <span class="info-val" style="color:var(--red);font-size:11px">${formatDate(v.redeemedAt)}</span>
+        </div>
+      </div>
+
+      <div class="redeemed-notice">
+        <div class="rn-title">Voucher Already Redeemed</div>
+        <div class="rn-date">Contact admin if this is an error</div>
+      </div>
+    `;
+  }
+
+  function renderError() {
+    document.getElementById('top-accent').className = 'card-accent red-accent';
+    document.getElementById('card-content').innerHTML = `
+      <div class="error-hero">
+        <div class="x-big">✕</div>
+        <div class="e-title">Invalid Voucher</div>
+        <div class="e-sub">This code was not found.<br>Please check and try again.</div>
+      </div>
+    `;
+  }
+
+  async function load() {
+    if (!code) { renderError(); return; }
+    try {
+      const data = await api({ action: 'getOne', code });
+      if (data.error || !data.voucher) { renderError(); return; }
+      currentVoucher = data.voucher;
+      if (currentVoucher.status === 'redeemed') {
+        renderRedeemed(currentVoucher);
+      } else {
+        renderActive(currentVoucher);
+      }
+    } catch(e) {
+      renderError();
+    }
+  }
+
+  function openConfirm() {
+    document.getElementById('confirm-sub').textContent =
+      `Mark ${currentVoucher.guestName}'s voucher as used? This action will be logged.`;
+    document.getElementById('confirm-overlay').classList.add('show');
+  }
+
+  function closeConfirm() {
+    document.getElementById('confirm-overlay').classList.remove('show');
+  }
+
+  async function doRedeem() {
+    closeConfirm();
+    const btn = document.querySelector('.btn-redeem');
+    if (btn) { btn.disabled = true; btn.textContent = 'Processing…'; }
+    try {
+      const data = await api({ action: 'redeem', code, by: 'Staff' });
+      if (data.error) { alert('Error: ' + data.error); if (btn) { btn.disabled = false; btn.textContent = 'Mark as Used'; } return; }
+      await load();
+    } catch(e) {
+      alert('Connection error. Try again.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Mark as Used'; }
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>
