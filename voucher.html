@@ -403,14 +403,17 @@
   </div>
 </div>
 
-<script src="../admin/config.js"></script>
+<script>
+  window.BRAVA_API_URL = "https://script.google.com/macros/s/AKfycbwJXKGq3T1qTGLCFbY5iH-OTpDJRSvhFccDzaJocF5a40Dn4Fj3WKsRVUgzfyTQHyv6/exec";
+  window.BRAVA_VOUCHER_BASE_URL = "https://itzelgreen.github.io/brava-voucher-/voucher.html";
+</script>
 <script>
   const params = new URLSearchParams(window.location.search);
   const code   = params.get('code');
   let currentVoucher = null;
 
   async function api(p) {
-    const url = new URL(window.BRAVA_API_URL);
+    const url = new URL(window.BRAVA_API_URL || BRAVA_API_URL);
     Object.entries(p).forEach(([k,v]) => url.searchParams.set(k,v));
     const res = await fetch(url);
     return res.json();
