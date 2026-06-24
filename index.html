@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Club Brava — Voucher Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --black:   #0a0a0a;
+      --surface: #111111;
+      --card:    #181818;
+      --border:  #2a2a2a;
+      --gold:    #c9a84c;
+      --gold-dim:#7a6130;
+      --green:   #3ddc84;
+      --red:     #e05555;
+      --white:   #f0ede8;
+      --muted:   #6b6b6b;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Inter', sans-serif;
+      --font-mono:    'Space Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--white);
+    }
+
+    .logo span { color: var(--gold); }
+
+    .header-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Layout ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── Stats ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 300;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-num.green { color: var(--green); }
+    .stat-num.red   { color: var(--red); }
+    .stat-num.gold  { color: var(--gold); }
+
+    .stat-label {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Create form ── */
+    .create-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px 32px;
+      margin-bottom: 40px;
+    }
+
+    .section-eyebrow {
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 160px;
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 300;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]::placeholder { color: var(--muted); }
+    input[type="text"]:focus { border-color: var(--gold); }
+
+    .btn-create {
+      width: 100%;
+      background: var(--gold);
+      border: none;
+      color: var(--black);
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 13px 20px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-create:hover { opacity: 0.85; }
+    .btn-create:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Voucher includes ── */
+    .includes {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .include-pill {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .include-pill span {
+      color: var(--gold);
+      margin-right: 6px;
+    }
+
+    /* ── Filters ── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .filter-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── List ── */
+    .list-label {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .voucher-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .voucher-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 12px 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      transition: border-color 0.15s;
+    }
+
+    .voucher-row:hover { border-color: #3a3a3a; }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    .dot.used { background: var(--red); }
+
+    .voucher-info .name {
+      font-size: 14px;
+      font-weight: 400;
+      margin-bottom: 3px;
+    }
+
+    .voucher-info .code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .voucher-info .redeemed-label {
+      font-size: 10px;
+      color: var(--red);
+      margin-top: 2px;
+    }
+
+    .row-actions { display: flex; gap: 8px; align-items: center; }
+
+    .btn-copy, .btn-mark, .btn-undo {
+      border: 1px solid;
+      font-family: var(--font-body);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 12px;
+      cursor: pointer;
+      background: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-copy { border-color: var(--border); color: var(--muted); }
+    .btn-copy:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-copy.copied { border-color: var(--green); color: var(--green); }
+
+    .btn-mark { border-color: var(--red); color: var(--red); }
+    .btn-mark:hover { background: var(--red); color: var(--black); }
+
+    .btn-undo { border-color: var(--border); color: var(--muted); }
+    .btn-undo:hover { border-color: var(--muted); color: var(--white); }
+
+    /* ── Empty / loading ── */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      padding: 12px 24px;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Config banner ── */
+    #config-banner {
+      background: #1a1200;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-size: 11px;
+      padding: 12px 24px;
+      text-align: center;
+      letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 20px; }
+      .form-row { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat { padding: 14px 10px; }
+      .stat-num { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="config-banner" style="display:none">
+  ⚠ API not configured — open <code>config.js</code> and paste your Google Apps Script URL
+</div>
+
+<header>
+  <div class="logo">CLUB <span>BRAVA</span></div>
+  <div class="header-label">Voucher Admin</div>
+</header>
+
+<main>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num gold" id="stat-total">—</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num green" id="stat-active">—</div>
+      <div class="stat-label">Active</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num red" id="stat-redeemed">—</div>
+      <div class="stat-label">Redeemed</div>
+    </div>
+  </div>
+
+  <!-- Create -->
+  <div class="create-card">
+    <div class="section-eyebrow">+ New Voucher</div>
+    <div class="form-row">
+      <div>
+        <label>Guest Name</label>
+        <input type="text" id="guest-name" placeholder="e.g. María González" />
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button class="btn-create" id="btn-create" onclick="createVoucher()">
+          Create &amp; Copy Link
+        </button>
+      </div>
+    </div>
+    <div class="includes">
+      <div class="include-pill"><span>✦</span>Free admission — Guest + Plus One</div>
+      <div class="include-pill"><span>✦</span>1 Drink ticket each</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('active', this)">Active</button>
+    <button class="filter-btn" onclick="setFilter('redeemed', this)">Redeemed</button>
+  </div>
+
+  <div class="list-label">Issued Vouchers</div>
+  <div class="voucher-list" id="voucher-list">
+    <div class="empty">Loading…</div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+  let allVouchers = [];
+  let currentFilter = 'all';
+
+  // ── Config check ────────────────────────────────────────────
+  if (!window.BRAVA_API_URL) {
+    document.getElementById('config-banner').style.display = 'block';
+  }
+
+  // ── API ──────────────────────────────────────────────────────
+  async function api(params) {
+    const url = new URL(window.BRAVA_API_URL);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    const res  = await fetch(url);
+    return res.json();
+  }
+
+  // ── Load ─────────────────────────────────────────────────────
+  async function load() {
+    const data = await api({ action: 'getAll' });
+    allVouchers = data.vouchers || [];
+    updateStats();
+    renderList();
+  }
+
+  function updateStats() {
+    const total    = allVouchers.length;
+    const redeemed = allVouchers.filter(v => v.status === 'redeemed').length;
+    document.getElementById('stat-total').textContent    = total;
+    document.getElementById('stat-active').textContent   = total - redeemed;
+    document.getElementById('stat-redeemed').textContent = redeemed;
+  }
+
+  // ── Filter ───────────────────────────────────────────────────
+  function setFilter(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderList();
+  }
+
+  // ── Render ───────────────────────────────────────────────────
+  function renderList() {
+    const list = document.getElementById('voucher-list');
+    const filtered = currentFilter === 'all'
+      ? allVouchers
+      : allVouchers.filter(v => v.status === currentFilter);
+
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty">No vouchers yet.</div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(v => {
+      const isUsed = v.status === 'redeemed';
+      const date   = v.redeemedAt ? new Date(v.redeemedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+      return `
+        <div class="voucher-row" id="row-${v.code}">
+          <div class="dot ${isUsed ? 'used' : ''}"></div>
+          <div class="voucher-info">
+            <div class="name">${v.guestName}</div>
+            <div class="code">${v.code}</div>
+            ${isUsed ? `<div class="redeemed-label">Redeemed ${date}</div>` : ''}
+          </div>
+          <div class="row-actions">
+            <button class="btn-copy" id="copy-${v.code}" onclick="copyLink('${v.code}', this)">Copy Link</button>
+            ${isUsed
+              ? `<button class="btn-undo" onclick="undoRedeem('${v.code}')">Undo</button>`
+              : `<button class="btn-mark" onclick="markUsed('${v.code}')">Mark Used</button>`
+            }
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Create ───────────────────────────────────────────────────
+  async function createVoucher() {
+    const name = document.getElementById('guest-name').value.trim();
+    if (!name) { toast('Enter a guest name'); return; }
+
+    const btn = document.getElementById('btn-create');
+    btn.disabled = true;
+    btn.textContent = 'Creating…';
+
+    const data = await api({ action: 'create', name });
+    if (data.error) { toast('Error: ' + data.error); btn.disabled = false; btn.textContent = 'Create & Copy Link'; return; }
+
+    document.getElementById('guest-name').value = '';
+    btn.disabled = false;
+    btn.textContent = 'Create & Copy Link';
+
+    await load();
+    copyLinkByCode(data.voucher.code);
+    toast(`Voucher ${data.voucher.code} created — link copied!`);
+  }
+
+  // ── Copy link ────────────────────────────────────────────────
+  function voucherURL(code) {
+    return `${window.BRAVA_VOUCHER_BASE_URL}?code=${code}`;
+  }
+
+  function copyLink(code, btn) {
+    navigator.clipboard.writeText(voucherURL(code));
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Link'; btn.classList.remove('copied'); }, 2000);
+  }
+
+  function copyLinkByCode(code) {
+    navigator.clipboard.writeText(voucherURL(code));
+  }
+
+  // ── Mark used ────────────────────────────────────────────────
+  async function markUsed(code) {
+    const data = await api({ action: 'redeem', code, by: 'Admin' });
+    if (data.error) { toast('Error: ' + data.error); return; }
+    await load();
+    toast(`${code} marked as used`);
+  }
+
+  async function undoRedeem(code) {
+    const data = await api({ action: 'unredeeem', code });
+    if (data.error) { toast('Error: ' + data.error); return; }
+    await load();
+    toast(`${code} reactivated`);
+  }
+
+  // ── Toast ────────────────────────────────────────────────────
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3000);
+  }
+
+  // ── Init ─────────────────────────────────────────────────────
+  load();
+  setInterval(load, 30000); // refresh every 30s
+</script>
+</body>
+</html>
